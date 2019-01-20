@@ -1,17 +1,18 @@
-# all_to_the_bottom
-Parser logs online shop "all_to_the_bottom" and web analys report
-for this install module:
 
-Parser logs run in Jupiter NoteBook
-Web reports:
-for this install module:
+Парсер логов для интернет магазина "Все на дно!"
+Для запуска парсера логов и заполнения бд нужно ввести команду:
+
+python parsers_logs.py "имя_файла_с_логами"(без кавычек)
+
+Необходимо установить библиотеки:
 pip install bokeh
 pip install bottle
+pip install pandas
+pip install requests
 
-The main.py in this directory  makes use of the Bokeh server, to create data visualization web apps from simple python scripts.
 
-To run  these main.py, excute 
+Чтобы запустить веб-приложение введите команду: 
 
 bokeh serve --show main.py
 
-will run the "main" , and open it up in a new browser tab.
+

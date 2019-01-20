@@ -1,6 +1,7 @@
 import requests
 import time
 import sqlite3
+import sys
 conn = sqlite3.connect("logs.db")
 cursor = conn.cursor()
 cursor.execute("""drop TABLE category_goods""")
@@ -80,7 +81,7 @@ def AddUser(ip):
             country = None
         cursor.execute("""insert into users (ip,country) values(?,?)""",[(ip),(country)])
     return  GetUser(ip)
-path_logs = 'logs.txt' 	
+path_logs = sys.argv[1] 	
 f = open(path_logs)
 list_visits_site = []
 list_visits_category = []

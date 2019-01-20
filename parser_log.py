@@ -81,8 +81,7 @@ def AddUser(ip):
             country = None
         cursor.execute("""insert into users (ip,country) values(?,?)""",[(ip),(country)])
     return  GetUser(ip)
-path_logs = 'logs.txt'
-print(sys.argv[1])	
+path_logs = sys.argv[1]
 f = open(path_logs)
 list_visits_site = []
 list_visits_category = []
@@ -122,20 +121,18 @@ for line in f:
             list_visits_category.append(log)
     else:
         list_visits_site.append(log)
-print(list_visits_site)
-print(list_visits_category)
-print(list_visits_good)
-print(list_carts)
-print(list_pay)
-print(list_success_pay)
+
   
 
-
+count = 1
+print('Выполнение может занять несколько минут')
 for d in list_visits_site:
-        user_id = AddUser(d['ip'])
-        cursor.execute("""insert into visits (datetime,category_id,good_id,user_id) values(?,?,?,?)""",[(d['datetime']),(None),(None),(user_id)])
-        time.sleep(0.5)
-
+	user_id = AddUser(d['ip'])
+	cursor.execute("""insert into visits (datetime,category_id,good_id,user_id) values(?,?,?,?)""",[(d['datetime']),(None),(None),(user_id)])
+	time.sleep(0.5)
+	print( count/len(list_visits_site)*100)
+	count+=1
+	conn.commit()	
 for d in list_visits_category:
     user_id = AddUser(d['ip'])
     category_id = GetCategoryGood(d['category'])
@@ -155,23 +152,23 @@ for d in list_visits_good:
             cursor.execute("""insert into goods ( name, category_id) values(?,?)""",[(d['good']),(category_id)])
             good_id =GetGood(d['good'],category_id)
     cursor.execute("""insert into visits (datetime,category_id,good_id,user_id) values(?,?,?,?)""",[(d['datetime']),(category_id),(good_id),(user_id)])
-    
+    conn.commit()
 for d in list_carts:
-        user_id = GetUser(d['ip'])
-        cursor.execute("""select id from cart_history where id = ? """,[(d['cart_id'])])
-        if len(cursor.fetchall()) == 0:
-            cursor.execute("""select good_id from visits  where user_id = ? and datetime < ? ORDER BY datetime desc""",[(user_id),(d['datetime'])])
-            good_id = cursor.fetchall()[0][0]
-            cursor.execute("""insert into cart_history (id,datetime,good_id,user_id,amount) values(?,?,?,?,?)""",[(d['cart_id']),(d['datetime']),(good_id),(user_id),(d['amount'])])
-
+	user_id = GetUser(d['ip'])
+	cursor.execute("""select id from cart_history where id = ? """,[(d['cart_id'])])
+	if len(cursor.fetchall()) == 0:
+		cursor.execute("""select good_id from visits  where user_id = ? and datetime < ? ORDER BY datetime desc""",[(user_id),(d['datetime'])])
+		good_id = cursor.fetchall()[0][0]
+		cursor.execute("""insert into cart_history (id,datetime,good_id,user_id,amount) values(?,?,?,?,?)""",[(d['cart_id']),(d['datetime']),(good_id),(user_id),(d['amount'])])
+	conn.commit()
 for d in list_pay:
-    cursor.execute("""insert into purchases (datetime,cart_id) values(?,?)""",[(d['datetime']),(d['cart_id'])])
+	cursor.execute("""insert into purchases (datetime,cart_id) values(?,?)""",[(d['datetime']),(d['cart_id'])])
+	conn.commit()
 
 for d in list_success_pay:
-    cursor.execute("""update purchases set status = true where cart_id = ?""",[(d['cart_id'])])
-
-
-cursor.close()
+    cursor.execute("""update purchases set status = 1 where cart_id = ?""",[(d['cart_id'])])
+	
 conn.commit()
+cursor.close()
 conn.close()
 	

@@ -82,7 +82,7 @@ def AddUser(ip):
         cursor.execute("""insert into users (ip,country) values(?,?)""",[(ip),(country)])
     return  GetUser(ip)
 path_logs = sys.argv[1]
-f = open(path_logs)
+f = open(path_logs,'r')
 list_visits_site = []
 list_visits_category = []
 list_visits_good= []
